@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import UI from './UI';
-import GameObject from './GameObject';
+import GameObject from './GameObjects/GameObject';
 
 export default class App {
     // Three.js
@@ -66,7 +66,7 @@ export default class App {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const cube = new THREE.Mesh(geometry, material);
-        this.gameObjects.add(new GameObject("Cube", cube, (delta) => {
+        this.gameObjects.add(new GameObject((delta) => {
             cube.rotation.x += 0.01 * delta / 20;
 
             cube.rotation.y += 0.01 * delta / 20;
