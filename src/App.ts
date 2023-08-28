@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import UI from './UI';
 import GameObject from './GameObjects/GameObject';
+import { Tile } from './GameObjects/Tile';
 
 export default class App {
     // Three.js
@@ -17,13 +18,6 @@ export default class App {
         UI: document.createElement('div') as Element
     };
 
-    // Game Managed
-    private settings = {
-        debug: true,
-        fixedUpdateSpeed: 30,
-        updateSpeed: 0,
-    };
-
     // State
     private state = {
         initialized: false,
@@ -31,11 +25,18 @@ export default class App {
         lastTimestamp: 0
     };
 
-    // Player Settings / Render Options
-    protected options: {} = {};
+    // Game Settings - Default Settings
+    private settings = {
+        debug: true,
+        fixedUpdateSpeed: 30,
+        updateSpeed: 0,
+    };
 
-    // Game Objects
-    protected gameObjects: Set<GameObject> = new Set();
+    // Player Settings / Render Options / Game Setting Overrides
+    protected Options: {} = {};
+
+    // Previous Inputs
+    protected Inputs: {} = {}
 
     constructor(...props: any) {
         document.addEventListener('DOMContentLoaded', () => {
@@ -61,19 +62,15 @@ export default class App {
             // might need to mirror to canvas
         });
 
+        // Moves Camera Off Center
         this.camera.position.z = 5;
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        this.gameObjects.add(new GameObject((delta) => {
-            cube.rotation.x += 0.01 * delta / 20;
-
-            cube.rotation.y += 0.01 * delta / 20;
-        }));
-
-        this.scene.add(cube);
+        // Default Lighting
         this.scene.add(new THREE.AmbientLight(0x222222));
+
+        let obj = new Tile(() => {}); obj.generateSegments();
+        this.scene.add(...obj.getSegments().map(val => val.Mesh));
+
         this.Start();
     }
 
@@ -93,6 +90,10 @@ export default class App {
         return text;
     }
 
+    public GetInputs() {
+
+    }
+
     protected render(ts: number = 0) {
         if(this.state.shouldRender) {
             if(this.settings.updateSpeed === 0) { requestAnimationFrame((ts) => { this.render(ts) }) }
@@ -101,8 +102,11 @@ export default class App {
         // Set Delta
         const delta = ts - this.state.lastTimestamp;
     
+        // Inputs
+        this.GetInputs();
+
         // Objects
-        let objects = Array.from(this.gameObjects);
+        let objects = Array.from(GameObject.Objects);
         for(let i = 0; i < objects.length; i++) {
             objects[i].run(delta);
         }

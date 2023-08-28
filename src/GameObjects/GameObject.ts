@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default class GameObject {
     
+    static Objects: Set<GameObject> = new Set();
+
     public Name: string = "GameObject";
 
     protected runFrame: Function;
@@ -14,6 +16,8 @@ export default class GameObject {
     constructor(callback: (delta: number, ...args: any[]) => void) {
         this._ID = uuidv4();
         this.runFrame = callback;
+        
+        GameObject.Objects.add(this);
     }
 
     run(delta: number) {
