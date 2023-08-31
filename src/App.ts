@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import { InputEvent, Inputs } from './Event';
+
 import UI from './UI';
 import GameObject from './GameObjects/GameObject';
 import { Tile } from './GameObjects/Tile';
@@ -35,9 +37,6 @@ export default class App {
     // Player Settings / Render Options / Game Setting Overrides
     protected Options: {} = {};
 
-    // Previous Inputs
-    protected Inputs: {} = {}
-
     constructor(...props: any) {
         document.addEventListener('DOMContentLoaded', () => {
             this.elements = {
@@ -46,7 +45,13 @@ export default class App {
                 UI: document.getElementById('UI') ?? document.createElement('div'),
             }
 
-            this.Initialize(); 
+            this.Initialize();
+
+            // Inputs
+            document.addEventListener('wheel', (e) => {
+                Inputs["MouseWheel"] = e.deltaY;
+                InputEvent.MouseWheel(e);
+            });
         });
     }
 
@@ -87,6 +92,7 @@ export default class App {
         text += `\nNavigator: ${navigator.userAgent}`;
         text += `\nScreen Orientation: ${screen.orientation.type}`;
         text += `\n`;
+        text += `Inputs: ${JSON.stringify(Inputs)}`
         return text;
     }
 

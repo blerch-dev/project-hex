@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
+import { InputEvent, Inputs } from '../Event';
 
 export interface TileSegment {
     Mesh: THREE.Mesh,
@@ -12,26 +13,30 @@ export class Tile extends GameObject {
     public Radius: number;
 
     protected Segments: TileSegment[] = [];
+    protected Rotation: number = 0;
 
-    constructor(callback: (delta: number, ...args: any[]) => void, position = new THREE.Vector3(0, 0, 0), radius = 2) {
+    constructor(callback: (delta: number, ...args: any[]) => void, position = new THREE.Vector2(0, 0), radius = 2) {
         super(callback);
         this.Position = position;
         this.Radius = radius;
         
         // Need way to get where the edges are lining up to their neighbors
+        InputEvent.addEventListener("mouse-wheel", (e) => {
+            // console.log("Tile Event:", e);
+            this.rotateSegments(Inputs.MouseWheel > 0);
+        });
     }
 
     getSegments() { return this.Segments; }
 
     generateSegments(pos = this.Position, radius = this.Radius) {
-
         const points = [
-            pos.add(new THREE.Vector2(-radius, radius/2)),
-            pos.add(new THREE.Vector2(-radius, -radius/2)),
-            pos.add(new THREE.Vector2(0, -radius)),
-            pos.add(new THREE.Vector2(radius, -radius/2)),
-            pos.add(new THREE.Vector2(radius, radius/2)),
-            pos.add(new THREE.Vector2(0, radius)),
+            (new THREE.Vector2(pos.getComponent(0) - radius, pos.getComponent(1) + radius/2)).normalize().multiplyScalar(radius),
+            (new THREE.Vector2(pos.getComponent(0) - radius, pos.getComponent(1) - radius/2)).normalize().multiplyScalar(radius),
+            (new THREE.Vector2(pos.getComponent(0), pos.getComponent(1) - radius)).normalize().multiplyScalar(radius),
+            (new THREE.Vector2(pos.getComponent(0) + radius, pos.getComponent(1) - radius/2)).normalize().multiplyScalar(radius),
+            (new THREE.Vector2(pos.getComponent(0) + radius, pos.getComponent(1) + radius/2)).normalize().multiplyScalar(radius),
+            (new THREE.Vector2(pos.getComponent(0), pos.getComponent(1) + radius)).normalize().multiplyScalar(radius)
         ];
 
         const types = [
@@ -52,6 +57,18 @@ export class Tile extends GameObject {
             seg.Mesh = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(geo)), seg.Material);
 
             this.Segments.push(seg);
+        }
+    }
+
+    rotateSegments(clockwise = true) {
+        console.log("Rotating Clockwise:", clockwise);
+
+        this.Rotation += clockwise ? 1 : -1;
+        if(this.Rotation > 5) { this.Rotation = 0; }
+        else if(this.Rotation < 0) { this.Rotation = 5; }
+
+        for(let i = 0; i < this.Segments.length; i++) {
+            this.Segments[i].Mesh.rotateZ(((2*Math.PI)/6) * (clockwise ? -1 : 1));
         }
     }
 
