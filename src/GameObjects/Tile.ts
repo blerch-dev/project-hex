@@ -61,14 +61,14 @@ export class Tile extends GameObject {
     }
 
     rotateSegments(clockwise = true) {
-        console.log("Rotating Clockwise:", clockwise);
+        // console.log("Rotating Clockwise:", clockwise);
 
         this.Rotation += clockwise ? 1 : -1;
         if(this.Rotation > 5) { this.Rotation = 0; }
         else if(this.Rotation < 0) { this.Rotation = 5; }
 
         for(let i = 0; i < this.Segments.length; i++) {
-            this.Segments[i].Mesh.rotateZ(((2*Math.PI)/6) * (clockwise ? -1 : 1));
+            this.Segments[i].Mesh.rotateZ((Math.PI/3) * (clockwise ? -1 : 1));
         }
     }
 

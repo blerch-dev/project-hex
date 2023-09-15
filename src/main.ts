@@ -1,5 +1,5 @@
-import App from './App';
-const Game = new App();
+import { HexGame, CardGame } from './App';
+const Game = new CardGame();
 
 // External to App (Dev Dependent)
 document.addEventListener('DOMContentLoaded', () => {

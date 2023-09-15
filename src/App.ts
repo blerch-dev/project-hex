@@ -73,9 +73,6 @@ export default class App {
         // Default Lighting
         this.scene.add(new THREE.AmbientLight(0x222222));
 
-        let obj = new Tile(() => {}); obj.generateSegments();
-        this.scene.add(...obj.getSegments().map(val => val.Mesh));
-
         this.Start();
     }
 
@@ -122,5 +119,24 @@ export default class App {
     
         this.state.lastTimestamp = ts;
         this.renderer.render(this.scene, this.camera);
+    }
+
+    public AddGameObject(...meshs: THREE.Mesh[]) {
+        this.scene.add(...meshs);
+    }
+}
+
+export class HexGame extends App {
+    constructor() { 
+        super(); 
+
+        let obj = new Tile(() => {}); obj.generateSegments();
+        this.AddGameObject(...obj.getSegments().map(val => val.Mesh))
+    }
+}
+
+export class CardGame extends App {
+    constructor() {
+        super();
     }
 }

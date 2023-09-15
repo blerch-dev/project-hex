@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "npx vite --config vite-config.ts"
+    "start": "npx vite --config vite.config.ts"
   },
   "devDependencies": {
     "@types/three": "^0.155.0",
